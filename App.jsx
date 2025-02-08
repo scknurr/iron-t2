@@ -1,11 +1,36 @@
-// src/App.jsx
 import React, {
   useState,
   useMemo,
   createContext,
   useContext
 } from 'react';
-import './styles.css'; // Make sure you have a styles.css (or similar) file in the same folder
+
+// Canvas Kit imports
+import {
+  PrimaryButton,
+  SecondaryButton,
+  DeleteButton,
+  Button
+} from '@workday/canvas-kit-react/button';
+import {
+  FormField,
+  FormFieldLabel
+} from '@workday/canvas-kit-react/form-field';
+import {
+  TextInput
+} from '@workday/canvas-kit-react/text-input';
+import {
+  Select
+} from '@workday/canvas-kit-react/select';
+import {
+  Avatar
+} from '@workday/canvas-kit-react/avatar';
+
+// (Optional) Labs import for presence indicators, global header, etc.
+// import { StatusIndicator } from '@workday/canvas-kit-labs-react/status-indicator';
+// import { GlobalHeader } from '@workday/canvas-kit-labs-react/header';
+
+import './styles.css'; // Keep your layout/styles or convert them to Canvas tokens if you prefer
 
 /* ------------------ Context & Data Generation ------------------ */
 const AppContext = createContext();
@@ -47,9 +72,8 @@ function useAppContext() {
   return useContext(AppContext);
 }
 
-/* ------------------ Revised Fake Data Generation ------------------ */
+/* ------------------ Fake Data Generation ------------------ */
 function generateFakeData() {
-  // Realistic human profiles
   const humans = [
     {
       id: 'H001',
@@ -75,10 +99,8 @@ function generateFakeData() {
       skills: [{ skillId: 'S012', rating: 3 }],
       presenceStatus: 'offline'
     }
-    // (Expand to 50 entries as needed)
   ];
 
-  // Skills organized by medical specialty
   const skills = [
     {
       id: 'S010',
@@ -116,10 +138,8 @@ function generateFakeData() {
       parentSkillId: null,
       siblingSkills: []
     }
-    // (Expand to 50 entries as needed)
   ];
 
-  // Realistic hospital data
   const customers = [
     {
       id: 'C001',
@@ -143,11 +163,9 @@ function generateFakeData() {
       skills: ['S012'],
       bedCount: 150
     }
-    // (Expand to 25 entries as needed)
   ];
 
   const now = Math.floor(Date.now() / 1000);
-  // Generate an activity feed with realistic timestamps.
   const activityFeed = Array.from({ length: 20 }, (_, i) => ({
     id: `ACT${i.toString().padStart(3, '0')}`,
     timestamp: now - i * 300,
@@ -167,7 +185,7 @@ function generateFakeData() {
   return { humans, skills, customers, activityFeed };
 }
 
-/* ------------------ New SearchBar Component ------------------ */
+/* ------------------ SearchBar Component (Canvas) ------------------ */
 function SearchBar({ onSearch }) {
   const { setActivityFeed } = useAppContext();
   const [query, setQuery] = useState('');
@@ -186,28 +204,28 @@ function SearchBar({ onSearch }) {
   };
 
   return (
-    <div className="search-bar-container">
-      <input
-        type="text"
-        className="search-bar"
-        value={query}
-        onChange={e => setQuery(e.target.value)}
-        placeholder="Search skills, people, hospitals..."
-      />
-      <button onClick={handleSearch}>Search</button>
+    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+      <FormField labelPosition={FormField.LabelPosition.Hidden}>
+        <TextInput
+          placeholder="Search skills, people, hospitals..."
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+        />
+      </FormField>
+      <PrimaryButton onClick={handleSearch}>Search</PrimaryButton>
     </div>
   );
 }
 
-/* ------------------ New SkillGraph Component ------------------ */
+/* ------------------ SkillGraph Component (Canvas Buttons) ------------------ */
 function SkillGraph({ skill }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
     <div className="skill-graph">
-      <button onClick={() => setExpanded(!expanded)}>
+      <SecondaryButton onClick={() => setExpanded(!expanded)}>
         {expanded ? 'Hide Adjacency' : 'Show Adjacency'}
-      </button>
+      </SecondaryButton>
       {expanded && (
         <ul>
           {skill.parentSkillId && (
@@ -226,20 +244,20 @@ function SkillGraph({ skill }) {
   );
 }
 
-/* ------------------ Profile & Card Components ------------------ */
+/* ------------------ Profile & Card Components (Using Avatar & Canvas Buttons) ------------------ */
 function HumanProfile({ human, onNavigate }) {
   return (
     <div className="profile-grid">
       <div className="profile-sidebar">
-        <img
+        <Avatar
+          size="l"
+          altText={human.name}
           src={human.profilePhotoUrl}
-          alt={human.name}
-          className="profile-avatar"
         />
         <h2>{human.name}</h2>
         <p>{human.headline}</p>
         <p className="presence-status">{human.presenceStatus}</p>
-        <button className="edit-profile-btn">Edit Profile</button>
+        <Button onClick={() => alert('Editing profile')}>Edit Profile</Button>
       </div>
       <div className="profile-content">
         <h3>Skills &amp; Expertise</h3>
@@ -272,11 +290,7 @@ function CustomerProfile({ customer, onNavigate }) {
       <div className="profile-content">
         <h3>Staff</h3>
         {customer.humans.map(humanId => (
-          <HumanCard
-            key={humanId}
-            humanId={humanId}
-            onNavigate={onNavigate}
-          />
+          <HumanCard key={humanId} humanId={humanId} onNavigate={onNavigate} />
         ))}
         <h3>Key Skills in Use</h3>
         {customer.skills.map(skillId => (
@@ -306,11 +320,7 @@ function SkillProfile({ skill, onNavigate }) {
         ))}
         <h3>Who Uses This Skill?</h3>
         {skill.humans.map(humanId => (
-          <HumanCard
-            key={humanId}
-            humanId={humanId}
-            onNavigate={onNavigate}
-          />
+          <HumanCard key={humanId} humanId={humanId} onNavigate={onNavigate} />
         ))}
         <h3>Where Is This Skill Applied?</h3>
         {skill.customers &&
@@ -326,6 +336,7 @@ function SkillProfile({ skill, onNavigate }) {
   );
 }
 
+/* Cards use clickable div => Replaced with onClick, but we keep an onNavigate call. */
 function HumanCard({ humanId, onNavigate }) {
   const { humans } = useAppContext();
   const human = humans.find(h => h.id === humanId);
@@ -450,7 +461,7 @@ function EntityPage({ entity, onNavigate }) {
   }
 }
 
-/* ------------------ InterviewPage Component ------------------ */
+/* ------------------ InterviewPage Component (Canvas) ------------------ */
 function InterviewPage({ onNavigate }) {
   const { humans, skills } = useAppContext();
   const [step, setStep] = useState(1);
@@ -461,11 +472,9 @@ function InterviewPage({ onNavigate }) {
   const handleNext = () => {
     if (step < 3) setStep(step + 1);
   };
-
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
   };
-
   const handleSubmit = () => {
     if (selectedHuman && selectedSkill) {
       alert(
@@ -486,83 +495,92 @@ function InterviewPage({ onNavigate }) {
       <h2>Interview Workflow</h2>
       {step === 1 && (
         <div className="interview-step">
-          <label htmlFor="human">Select a Human (User):</label>
-          <select
-            id="human"
-            value={selectedHuman}
-            onChange={e => setSelectedHuman(e.target.value)}
-          >
-            <option value="">--Choose a Human--</option>
-            {humans.map(user => (
-              <option key={user.id} value={user.id}>
-                {user.name}
-              </option>
-            ))}
-          </select>
-          <button onClick={handleNext}>Next</button>
+          <FormField label="Select a Human (User):">
+            <Select
+              onChange={e => setSelectedHuman(e.target.value)}
+              value={selectedHuman}
+            >
+              <option value="">--Choose a Human--</option>
+              {humans.map(user => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+          <div style={{ marginTop: '1rem' }}>
+            <SecondaryButton onClick={handleNext}>Next</SecondaryButton>
+          </div>
         </div>
       )}
       {step === 2 && (
         <div className="interview-step">
-          <label htmlFor="skill">Select a Skill:</label>
-          <select
-            id="skill"
-            value={selectedSkill}
-            onChange={e => setSelectedSkill(e.target.value)}
-          >
-            <option value="">--Choose a Skill--</option>
-            {skills.map(skill => (
-              <option key={skill.id} value={skill.id}>
-                {skill.name} ({skill.category})
-              </option>
-            ))}
-          </select>
-          <button onClick={handleBack}>Back</button>
-          <button onClick={handleNext}>Next</button>
+          <FormField label="Select a Skill:">
+            <Select
+              onChange={e => setSelectedSkill(e.target.value)}
+              value={selectedSkill}
+            >
+              <option value="">--Choose a Skill--</option>
+              {skills.map(skill => (
+                <option key={skill.id} value={skill.id}>
+                  {skill.name} ({skill.category})
+                </option>
+              ))}
+            </Select>
+          </FormField>
+          <div style={{ marginTop: '1rem' }}>
+            <SecondaryButton onClick={handleBack} style={{ marginRight: 8 }}>
+              Back
+            </SecondaryButton>
+            <SecondaryButton onClick={handleNext}>Next</SecondaryButton>
+          </div>
         </div>
       )}
       {step === 3 && (
         <div className="interview-step">
-          <label htmlFor="rating">Assign Skill Rating (1-5):</label>
-          <input
-            id="rating"
-            type="number"
-            min="1"
-            max="5"
-            value={rating}
-            onChange={e => setRating(Number(e.target.value))}
-          />
-          <button onClick={handleBack}>Back</button>
-          <button onClick={handleSubmit}>Submit Interview</button>
+          <FormField label="Assign Skill Rating (1-5):">
+            <TextInput
+              type="number"
+              min={1}
+              max={5}
+              value={rating}
+              onChange={e => setRating(Number(e.target.value))}
+            />
+          </FormField>
+          <div style={{ marginTop: '1rem' }}>
+            <SecondaryButton onClick={handleBack} style={{ marginRight: 8 }}>
+              Back
+            </SecondaryButton>
+            <PrimaryButton onClick={handleSubmit}>Submit</PrimaryButton>
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-/* ------------------ Header Component ------------------ */
+/* ------------------ Header Component (Simplified Canvas) ------------------ */
 function Header() {
   return (
     <header className="canvas-header">
       <h1>Iron Triangle BI</h1>
-      <input
-        type="text"
-        className="canvas-search-bar"
-        placeholder="Search skills, people, hospitals..."
-      />
+      <div style={{ width: 300 }}>
+        <TextInput placeholder="Search skills, people, hospitals..." />
+      </div>
       <div className="user-menu">
-        <img
+        <Avatar
+          size="s"
+          altText="User"
           src="https://via.placeholder.com/40"
-          alt="User"
-          className="canvas-profile-icon"
         />
+        {/* For presence, you could use StatusIndicator (Labs) or a small dot icon */}
         <span className="presence-indicator online"></span>
       </div>
     </header>
   );
 }
 
-/* ------------------ Navigation Component ------------------ */
+/* ------------------ Navigation (Canvas Buttons) ------------------ */
 function Navigation({ currentPage, onNavigate }) {
   const pages = [
     { key: 'home', label: 'Home' },
@@ -571,24 +589,28 @@ function Navigation({ currentPage, onNavigate }) {
     { key: 'customers', label: 'Customers' },
     { key: 'interview', label: 'Interview' }
   ];
+
   return (
     <nav className="canvas-navbar">
       {pages.map(page => (
-        <button
+        <SecondaryButton
           key={page.key}
-          className={`canvas-button ${
-            currentPage === page.key ? 'active' : ''
-          }`}
           onClick={() => onNavigate(page.key)}
+          style={{
+            marginRight: '8px',
+            ...(currentPage === page.key
+              ? { backgroundColor: '#EDFAFF' }
+              : {})
+          }}
         >
           {page.label}
-        </button>
+        </SecondaryButton>
       ))}
     </nav>
   );
 }
 
-/* ------------------ HomePage Component ------------------ */
+/* ------------------ HomePage ------------------ */
 function HomePage({ onNavigate }) {
   return (
     <div className="main-content">
@@ -644,7 +666,7 @@ function IndicatorsPanel() {
   );
 }
 
-/* ------------------ ActivityFeed Component ------------------ */
+/* ------------------ ActivityFeed & FeedItem ------------------ */
 function ActivityFeed({ onNavigate }) {
   const { activityFeed } = useAppContext();
 
@@ -663,7 +685,6 @@ function ActivityFeed({ onNavigate }) {
   );
 }
 
-/* ------------------ FeedItem Component ------------------ */
 function FeedItem({ item, onNavigate }) {
   const date = new Date(item.timestamp * 1000);
   return (
@@ -708,7 +729,7 @@ function FeedItem({ item, onNavigate }) {
   );
 }
 
-/* ------------------ HumansPage Component ------------------ */
+/* ------------------ HumansPage (Using table) ------------------ */
 function HumansPage({ onNavigate }) {
   const { humans } = useAppContext();
 
@@ -730,7 +751,6 @@ function HumansPage({ onNavigate }) {
             {user.name}
           </a>
         </td>
-        {/* CodePen used user.role, but we only have user.headline or placeholders in data */}
         <td>{user.headline || 'N/A'}</td>
         <td>{user.presenceStatus}</td>
       </tr>
@@ -754,7 +774,7 @@ function HumansPage({ onNavigate }) {
   );
 }
 
-/* ------------------ SkillsPage Component ------------------ */
+/* ------------------ SkillsPage (Canvas Buttons) ------------------ */
 function SkillsPage({ onNavigate }) {
   const { skills } = useAppContext();
 
@@ -791,11 +811,13 @@ function SkillsPage({ onNavigate }) {
         <td>{skill.popularityScore}</td>
         <td>
           {skill.siblingSkills && skill.siblingSkills.length > 0 && (
-            <button
-              onClick={() => handleMergeSkills(skill.id, skill.siblingSkills[0])}
+            <DeleteButton
+              onClick={() =>
+                handleMergeSkills(skill.id, skill.siblingSkills[0])
+              }
             >
               Merge with {skill.siblingSkills[0]}
-            </button>
+            </DeleteButton>
           )}
         </td>
       </tr>
@@ -822,7 +844,7 @@ function SkillsPage({ onNavigate }) {
   );
 }
 
-/* ------------------ CustomersPage Component ------------------ */
+/* ------------------ CustomersPage ------------------ */
 function CustomersPage({ onNavigate }) {
   const { customers } = useAppContext();
 
@@ -869,7 +891,7 @@ function CustomersPage({ onNavigate }) {
   );
 }
 
-/* ------------------ Main Application & Routing ------------------ */
+/* ------------------ Main App & Routing ------------------ */
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [activeEntity, setActiveEntity] = useState(null);
@@ -884,13 +906,10 @@ export default function App() {
       <div className="app">
         <Header />
         <Navigation currentPage={currentPage} onNavigate={handleNavigation} />
+
         {currentPage === 'home' && <HomePage onNavigate={handleNavigation} />}
-        {currentPage === 'humans' && (
-          <HumansPage onNavigate={handleNavigation} />
-        )}
-        {currentPage === 'skills' && (
-          <SkillsPage onNavigate={handleNavigation} />
-        )}
+        {currentPage === 'humans' && <HumansPage onNavigate={handleNavigation} />}
+        {currentPage === 'skills' && <SkillsPage onNavigate={handleNavigation} />}
         {currentPage === 'customers' && (
           <CustomersPage onNavigate={handleNavigation} />
         )}
@@ -904,4 +923,3 @@ export default function App() {
     </AppProvider>
   );
 }
-
