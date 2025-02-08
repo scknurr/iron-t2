@@ -1,17 +1,15 @@
 {
-  "name": "iron-t2",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
+  "name": "my-canvas-react-app",
+  "version": "1.0.0",
+  "description": "React + CanvasKit on StackBlitz",
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "latest",
+    "react-dom": "latest",
+    "@workday/canvas-kit-react": "latest", // <-- Add or update
+    "sass": "latest"                       // <-- Required if you plan to use .scss
   },
-  "devDependencies": {
-    "vite": "^4.0.0",
-    "@vitejs/plugin-react": "^4.0.0"
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build"
   }
 }
