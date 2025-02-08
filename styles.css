@@ -1,0 +1,278 @@
+/* src/styles.css */
+
+/* ------------------ Workday Canvas Design Tokens ------------------ */
+:root {
+  --primary-color: #0072c6;
+  --primary-dark: #003366;
+  --background-color: #f4f4f4;
+  --font-family: "Workday Sans", "Segoe UI", Arial, sans-serif;
+  --spacing-small: 0.5rem;
+  --spacing-medium: 1rem;
+  --spacing-large: 1.5rem;
+}
+
+/* ------------------ Full-Screen Layout ------------------ */
+.app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--background-color);
+}
+
+/* Header & navigation styles, etc. */
+.canvas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-large);
+  background-color: var(--primary-dark);
+  color: white;
+  font-family: var(--font-family);
+}
+
+.canvas-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.canvas-search-bar {
+  flex: 1;
+  margin: 0 1rem;
+  padding: var(--spacing-small);
+  font-size: 1rem;
+  border-radius: 5px;
+  border: none;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+}
+
+.canvas-profile-icon {
+  width: 40px;
+  border-radius: 50%;
+  margin-right: var(--spacing-small);
+}
+
+.presence-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: green;
+}
+
+.canvas-navbar {
+  background-color: #fff;
+  display: flex;
+  justify-content: space-around;
+  padding: var(--spacing-medium);
+  border-bottom: 3px solid var(--primary-dark);
+  font-family: var(--font-family);
+}
+
+.canvas-button {
+  padding: var(--spacing-small) var(--spacing-medium);
+  border: none;
+  background: none;
+  font-size: 1rem;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+.canvas-button.active {
+  color: var(--primary-dark);
+  font-weight: bold;
+  border-bottom-color: var(--primary-dark);
+}
+
+/* Main content area */
+.main-content {
+  flex: 1;
+  display: flex;
+  overflow-y: auto;
+  padding: var(--spacing-small);
+}
+
+/* Indicators panel & other panels */
+.indicators-panel {
+  background: #fff;
+  padding: var(--spacing-medium);
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: var(--spacing-medium);
+  font-family: var(--font-family);
+}
+
+/* Profile layout */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: var(--spacing-medium);
+  padding: var(--spacing-small);
+  font-size: 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin: var(--spacing-small);
+  background: #fff;
+}
+
+.profile-sidebar {
+  border-right: 1px solid #ddd;
+  padding-right: var(--spacing-small);
+}
+
+.profile-avatar {
+  width: 100%;
+  border-radius: 50%;
+}
+
+.edit-profile-btn {
+  padding: var(--spacing-small) var(--spacing-medium);
+  border: none;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.edit-profile-btn:hover {
+  background: var(--primary-dark);
+}
+
+/* Cards */
+.card {
+  border: 1px solid #ddd;
+  padding: var(--spacing-small);
+  margin: var(--spacing-small) 0;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.card:hover {
+  background: #f9f9f9;
+}
+
+.skill-card {
+  border: 1px solid #ddd;
+  padding: var(--spacing-small);
+  margin-bottom: var(--spacing-small);
+  border-radius: 5px;
+}
+
+/* Activity feed */
+.activity-feed {
+  background: #fff;
+  padding: var(--spacing-medium);
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow-y: auto;
+  font-family: var(--font-family);
+}
+
+.activity-feed h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: var(--spacing-small);
+}
+
+.feed-item {
+  border-bottom: 1px solid #eee;
+  padding: var(--spacing-small) 0;
+}
+
+.feed-item:last-child {
+  border-bottom: none;
+}
+
+.feed-item-header {
+  font-size: 0.9rem;
+  margin-bottom: var(--spacing-small);
+  position: relative;
+}
+
+.feed-item-header strong {
+  color: #333;
+}
+
+.timestamp {
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.feed-item-comment {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* Search bar container */
+.search-bar-container {
+  margin-bottom: var(--spacing-medium);
+}
+
+.search-bar-container .search-bar {
+  width: 100%;
+  padding: var(--spacing-small);
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* Skill graph */
+.skill-graph {
+  margin-top: var(--spacing-small);
+  font-size: 0.9rem;
+}
+
+.skill-graph ul {
+  list-style: none;
+  padding: var(--spacing-small);
+  margin: 0;
+}
+
+/* Table styling */
+.page table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-family);
+  background: #fff;
+}
+
+.page table thead {
+  background: #f9f9f9;
+}
+
+.page table th,
+.page table td {
+  padding: var(--spacing-small);
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+/* Hyperlinks */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+table td a {
+  display: inline-block;
+  padding: var(--spacing-small);
+  border-radius: 3px;
+}
+
+table td a:hover {
+  background-color: rgba(0, 114, 198, 0.2);
+}
