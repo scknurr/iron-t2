@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './styles.css'; // Global CSS
 // Option A: Precompiled CSS
-import '@workday/canvas-kit-react/dist/index.css';
+import "@workday/canvas-kit-react/core/index.scss";
 
 // If you installed Workday CanvasKit via npm and want the CSS globally:
 // import '@workday/canvas-kit-css/dist/canvas-kit.css';
