@@ -5,8 +5,8 @@
   "dependencies": {
     "react": "latest",
     "react-dom": "latest",
-    "@workday/canvas-kit-react": "latest", // <-- Add or update
-    "sass": "latest"                       // <-- Required if you plan to use .scss
+    "@workday/canvas-kit-react": "latest",
+    "sass": "latest",                      
   },
   "scripts": {
     "start": "react-scripts start",
