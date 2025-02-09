@@ -1,8 +1,21 @@
-// src/App.jsx
 import React, { useState, useMemo, createContext, useContext } from 'react';
-import './styles.css'; // For your global styles
+
+// Canvas Kit imports
+import {
+  PrimaryButton,
+  SecondaryButton,
+  DeleteButton
+} from '@workday/canvas-kit-react/button';
+import { FormField } from '@workday/canvas-kit-react/form-field';
+import { TextInput } from '@workday/canvas-kit-react/text-input';
+import { Select } from '@workday/canvas-kit-react/select';
+import { Avatar } from '@workday/canvas-kit-react/avatar';
+import { Text } from '@workday/canvas-kit-react/text';
+
+import './styles.css'; // Keep your layout/styles or convert them to Canvas tokens if you prefer
 
 /* ------------------ Context & Data Generation ------------------ */
+
 const AppContext = createContext();
 
 function AppProvider({ children }) {
@@ -40,9 +53,9 @@ function useAppContext() {
   return useContext(AppContext);
 }
 
-/* ------------------ Data Generation ------------------ */
+/* ------------------ Fake Data Generation ------------------ */
+
 function generateFakeData() {
-  // Realistic human profiles
   const humans = [
     {
       id: 'H001',
@@ -68,10 +81,8 @@ function generateFakeData() {
       skills: [{ skillId: 'S012', rating: 3 }],
       presenceStatus: 'offline'
     }
-    // (Expand as needed)
   ];
 
-  // Skills
   const skills = [
     {
       id: 'S010',
@@ -109,10 +120,8 @@ function generateFakeData() {
       parentSkillId: null,
       siblingSkills: []
     }
-    // (Expand as needed)
   ];
 
-  // Customers (hospitals)
   const customers = [
     {
       id: 'C001',
@@ -136,17 +145,17 @@ function generateFakeData() {
       skills: ['S012'],
       bedCount: 150
     }
-    // (Expand as needed)
   ];
 
   const now = Math.floor(Date.now() / 1000);
-  // Generate an activity feed with realistic timestamps.
   const activityFeed = Array.from({ length: 20 }, (_, i) => ({
     id: `ACT${i.toString().padStart(3, '0')}`,
     timestamp: now - i * 300,
     actorId: humans[Math.floor(Math.random() * humans.length)].id,
     actorName: humans[Math.floor(Math.random() * humans.length)].name,
-    entityType: ['CUSTOMER', 'SKILL', 'SEARCH'][Math.floor(Math.random() * 3)],
+    entityType: ['CUSTOMER', 'SKILL', 'SEARCH'][
+      Math.floor(Math.random() * 3)
+    ],
     entityId: customers[Math.floor(Math.random() * customers.length)].id,
     entityName: customers[Math.floor(Math.random() * customers.length)].name,
     dataField: i % 3 === 0 ? 'merge' : 'rating',
@@ -158,9 +167,7 @@ function generateFakeData() {
   return { humans, skills, customers, activityFeed };
 }
 
-/* ------------------ Components ------------------ */
-// Reusable context hook
-// -----------------------------------------------
+/* ------------------ SearchBar Component (Canvas) ------------------ */
 
 function SearchBar({ onSearch }) {
   const { setActivityFeed } = useAppContext();
@@ -180,37 +187,44 @@ function SearchBar({ onSearch }) {
   };
 
   return (
-    <div className="search-bar-container">
-      <input
-        type="text"
-        className="search-bar"
-        value={query}
-        onChange={e => setQuery(e.target.value)}
-        placeholder="Search skills, people, hospitals..."
-      />
-      <button onClick={handleSearch}>Search</button>
+    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+      <FormField>
+        <TextInput
+          placeholder="Search skills, people, hospitals..."
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+        />
+      </FormField>
+      <PrimaryButton onClick={handleSearch}>Search</PrimaryButton>
     </div>
   );
 }
 
+/* ------------------ SkillGraph Component (Canvas Buttons) ------------------ */
+
 function SkillGraph({ skill }) {
   const [expanded, setExpanded] = useState(false);
-
   return (
     <div className="skill-graph">
-      <button onClick={() => setExpanded(!expanded)}>
+      <SecondaryButton onClick={() => setExpanded(!expanded)}>
         {expanded ? 'Hide Adjacency' : 'Show Adjacency'}
-      </button>
+      </SecondaryButton>
       {expanded && (
         <ul>
           {skill.parentSkillId && (
             <li>
-              <strong>Parent:</strong> {skill.parentSkillId}
+              <Text as="span" weight="medium">
+                Parent:
+              </Text>{' '}
+              {skill.parentSkillId}
             </li>
           )}
           {skill.siblingSkills && skill.siblingSkills.length > 0 && (
             <li>
-              <strong>Siblings:</strong> {skill.siblingSkills.join(', ')}
+              <Text as="span" weight="medium">
+                Siblings:
+              </Text>{' '}
+              {skill.siblingSkills.join(', ')}
             </li>
           )}
         </ul>
@@ -219,23 +233,24 @@ function SkillGraph({ skill }) {
   );
 }
 
-/* -------------- Profile Components -------------- */
+/* ------------------ Profile & Card Components ------------------ */
+
 function HumanProfile({ human, onNavigate }) {
   return (
     <div className="profile-grid">
       <div className="profile-sidebar">
-        <img
-          src={human.profilePhotoUrl}
-          alt={human.name}
-          className="profile-avatar"
-        />
-        <h2>{human.name}</h2>
-        <p>{human.headline}</p>
-        <p className="presence-status">{human.presenceStatus}</p>
-        <button className="edit-profile-btn">Edit Profile</button>
+        <Avatar size="l" altText={human.name} src={human.profilePhotoUrl} />
+        <Text as="h2">{human.name}</Text>
+        <Text as="p">{human.headline}</Text>
+        <Text as="p" className="presence-status">
+          {human.presenceStatus}
+        </Text>
+        <SecondaryButton onClick={() => alert('Editing profile')}>
+          Edit Profile
+        </SecondaryButton>
       </div>
       <div className="profile-content">
-        <h3>Skills &amp; Expertise</h3>
+        <Text as="h3">Skills &amp; Expertise</Text>
         {human.skills.map(skill => (
           <SkillCard
             key={skill.skillId}
@@ -244,7 +259,7 @@ function HumanProfile({ human, onNavigate }) {
             onNavigate={onNavigate}
           />
         ))}
-        <h3>Recent Activity</h3>
+        <Text as="h3">Recent Activity</Text>
         <ActivityLog entityType="HUMAN" entityId={human.id} />
       </div>
     </div>
@@ -255,23 +270,23 @@ function CustomerProfile({ customer, onNavigate }) {
   return (
     <div className="profile-grid">
       <div className="profile-sidebar">
-        <h2>{customer.name}</h2>
-        <p>
+        <Text as="h2">{customer.name}</Text>
+        <Text as="p">
           {customer.facilityType} - {customer.ownershipType}
-        </p>
-        <p>EHR: {customer.ehrSystem}</p>
-        <p>Trauma: {customer.traumaCenterLevel}</p>
+        </Text>
+        <Text as="p">EHR: {customer.ehrSystem}</Text>
+        <Text as="p">Trauma: {customer.traumaCenterLevel}</Text>
       </div>
       <div className="profile-content">
-        <h3>Staff</h3>
+        <Text as="h3">Staff</Text>
         {customer.humans.map(humanId => (
           <HumanCard key={humanId} humanId={humanId} onNavigate={onNavigate} />
         ))}
-        <h3>Key Skills in Use</h3>
+        <Text as="h3">Key Skills in Use</Text>
         {customer.skills.map(skillId => (
           <SkillCard key={skillId} skillId={skillId} onNavigate={onNavigate} />
         ))}
-        <h3>Recent Updates</h3>
+        <Text as="h3">Recent Updates</Text>
         <ActivityLog entityType="CUSTOMER" entityId={customer.id} />
       </div>
     </div>
@@ -282,40 +297,43 @@ function SkillProfile({ skill, onNavigate }) {
   return (
     <div className="profile-grid">
       <div className="profile-sidebar">
-        <h2>{skill.name}</h2>
-        <p>{skill.description}</p>
-        <p className="category">{skill.category}</p>
+        <Text as="h2">{skill.name}</Text>
+        <Text as="p">{skill.description}</Text>
+        <Text as="p" className="category">
+          {skill.category}
+        </Text>
       </div>
       <div className="profile-content">
-        <h3>Endorsements</h3>
+        <Text as="h3">Endorsements</Text>
         {skill.endorsements.map(endorsement => (
-          <p key={endorsement.endorserId}>
+          <Text as="p" key={endorsement.endorserId}>
             {endorsement.comment} - {endorsement.endorserId}
-          </p>
+          </Text>
         ))}
-        <h3>Who Uses This Skill?</h3>
+        <Text as="h3">Who Uses This Skill?</Text>
         {skill.humans.map(humanId => (
           <HumanCard key={humanId} humanId={humanId} onNavigate={onNavigate} />
         ))}
-        <h3>Where Is This Skill Applied?</h3>
-        {skill.customers?.map(customerId => (
-          <CustomerCard
-            key={customerId}
-            customerId={customerId}
-            onNavigate={onNavigate}
-          />
-        ))}
+        <Text as="h3">Where Is This Skill Applied?</Text>
+        {skill.customers &&
+          skill.customers.map(customerId => (
+            <CustomerCard
+              key={customerId}
+              customerId={customerId}
+              onNavigate={onNavigate}
+            />
+          ))}
       </div>
     </div>
   );
 }
 
-/* -------------- Card Components -------------- */
+/* ------------------ Card Components ------------------ */
+
 function HumanCard({ humanId, onNavigate }) {
   const { humans } = useAppContext();
   const human = humans.find(h => h.id === humanId);
   if (!human) return null;
-
   return (
     <div
       className="card human-card"
@@ -328,7 +346,7 @@ function HumanCard({ humanId, onNavigate }) {
         });
       }}
     >
-      <p>{human.name}</p>
+      <Text as="p">{human.name}</Text>
     </div>
   );
 }
@@ -337,7 +355,6 @@ function CustomerCard({ customerId, onNavigate }) {
   const { customers } = useAppContext();
   const customer = customers.find(c => c.id === customerId);
   if (!customer) return null;
-
   return (
     <div
       className="card customer-card"
@@ -350,7 +367,7 @@ function CustomerCard({ customerId, onNavigate }) {
         });
       }}
     >
-      <p>{customer.name}</p>
+      <Text as="p">{customer.name}</Text>
     </div>
   );
 }
@@ -359,10 +376,9 @@ function SkillCard({ skillId, rating, onNavigate }) {
   const { skills } = useAppContext();
   const skill = skills.find(s => s.id === skillId);
   if (!skill) return null;
-
   return (
     <div className="skill-card">
-      <h4>
+      <Text as="h4">
         <a
           href="#"
           onClick={e => {
@@ -376,69 +392,80 @@ function SkillCard({ skillId, rating, onNavigate }) {
         >
           {skill.name}
         </a>
-      </h4>
-      {rating && <p>Rating: {rating}</p>}
+      </Text>
+      {rating && <Text as="p">Rating: {rating}</Text>}
       <SkillGraph skill={skill} />
     </div>
   );
 }
 
-/* -------------- Activity Log -------------- */
+/* ------------------ ActivityLog Component ------------------ */
+
 function ActivityLog({ entityType, entityId }) {
   const { activityFeed } = useAppContext();
   const filteredFeed = activityFeed.filter(
     item =>
+      item.entityType &&
       item.entityType.toUpperCase() === entityType &&
-      item.entityId === entityId
+      item.dataField &&
+      item.dataField.toLowerCase() === 'merge'
+        ? false
+        : true
   );
+  // Alternatively, if you only want to show items matching the type:
+  // const filteredFeed = activityFeed.filter(
+  //   item => item.entityType && item.entityType.toUpperCase() === entityType
+  // );
+
   return (
     <div className="activity-log">
       {filteredFeed.length === 0 ? (
-        <p>No recent activity.</p>
+        <Text as="p">No recent activity.</Text>
       ) : (
         filteredFeed.map(item => (
-          <p key={item.id}>
+          <Text as="p" key={item.id}>
             {item.comment} (at{' '}
             {new Date(item.timestamp * 1000).toLocaleString()})
-          </p>
+          </Text>
         ))
       )}
     </div>
   );
 }
 
-/* -------------- EntityPage -------------- */
+/* ------------------ EntityPage Component ------------------ */
+
 function EntityPage({ entity, onNavigate }) {
   const { humans, customers, skills } = useAppContext();
-  if (!entity) return <p>Loading...</p>;
-
+  if (!entity) return <Text as="p">Loading...</Text>;
   if (entity.type === 'human') {
     const fullEntity = humans.find(h => h.id === entity.id);
     return fullEntity ? (
       <HumanProfile human={fullEntity} onNavigate={onNavigate} />
     ) : (
-      <p>Human not found</p>
+      <Text as="p">Human not found</Text>
     );
   } else if (entity.type === 'customer') {
     const fullEntity = customers.find(c => c.id === entity.id);
     return fullEntity ? (
       <CustomerProfile customer={fullEntity} onNavigate={onNavigate} />
     ) : (
-      <p>Customer not found</p>
+      <Text as="p">Customer not found</Text>
     );
   } else if (entity.type === 'skill') {
     const fullEntity = skills.find(s => s.id === entity.id);
     return fullEntity ? (
       <SkillProfile skill={fullEntity} onNavigate={onNavigate} />
     ) : (
-      <p>Skill not found</p>
+      <Text as="p">Skill not found</Text>
     );
   } else {
-    return <p>Unknown entity type</p>;
+    return <Text as="p">Unknown entity type</Text>;
   }
 }
 
-/* -------------- InterviewPage -------------- */
+/* ------------------ InterviewPage Component (Canvas) ------------------ */
+
 function InterviewPage({ onNavigate }) {
   const { humans, skills } = useAppContext();
   const [step, setStep] = useState(1);
@@ -459,7 +486,6 @@ function InterviewPage({ onNavigate }) {
       alert(
         `Interview submitted: Assigned skill ${selectedSkill} with rating ${rating} to human ${selectedHuman}`
       );
-      // Reset
       setStep(1);
       setSelectedHuman('');
       setSelectedSkill('');
@@ -472,84 +498,92 @@ function InterviewPage({ onNavigate }) {
 
   return (
     <div className="page">
-      <h2>Interview Workflow</h2>
+      <Text as="h2">Interview Workflow</Text>
       {step === 1 && (
         <div className="interview-step">
-          <label htmlFor="human">Select a Human (User):</label>
-          <select
-            id="human"
-            value={selectedHuman}
-            onChange={e => setSelectedHuman(e.target.value)}
-          >
-            <option value="">--Choose a Human--</option>
-            {humans.map(user => (
-              <option key={user.id} value={user.id}>
-                {user.name}
-              </option>
-            ))}
-          </select>
-          <button onClick={handleNext}>Next</button>
+          <FormField label="Select a Human (User):">
+            <Select
+              onChange={e => setSelectedHuman(e.target.value)}
+              value={selectedHuman}
+            >
+              <option value="">--Choose a Human--</option>
+              {humans.map(user => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+          <div style={{ marginTop: '1rem' }}>
+            <SecondaryButton onClick={handleNext}>Next</SecondaryButton>
+          </div>
         </div>
       )}
       {step === 2 && (
         <div className="interview-step">
-          <label htmlFor="skill">Select a Skill:</label>
-          <select
-            id="skill"
-            value={selectedSkill}
-            onChange={e => setSelectedSkill(e.target.value)}
-          >
-            <option value="">--Choose a Skill--</option>
-            {skills.map(skill => (
-              <option key={skill.id} value={skill.id}>
-                {skill.name} ({skill.category})
-              </option>
-            ))}
-          </select>
-          <button onClick={handleBack}>Back</button>
-          <button onClick={handleNext}>Next</button>
+          <FormField label="Select a Skill:">
+            <Select
+              onChange={e => setSelectedSkill(e.target.value)}
+              value={selectedSkill}
+            >
+              <option value="">--Choose a Skill--</option>
+              {skills.map(skill => (
+                <option key={skill.id} value={skill.id}>
+                  {skill.name} ({skill.category})
+                </option>
+              ))}
+            </Select>
+          </FormField>
+          <div style={{ marginTop: '1rem' }}>
+            <SecondaryButton onClick={handleBack} style={{ marginRight: 8 }}>
+              Back
+            </SecondaryButton>
+            <SecondaryButton onClick={handleNext}>Next</SecondaryButton>
+          </div>
         </div>
       )}
       {step === 3 && (
         <div className="interview-step">
-          <label htmlFor="rating">Assign Skill Rating (1-5):</label>
-          <input
-            id="rating"
-            type="number"
-            min="1"
-            max="5"
-            value={rating}
-            onChange={e => setRating(Number(e.target.value))}
-          />
-          <button onClick={handleBack}>Back</button>
-          <button onClick={handleSubmit}>Submit Interview</button>
+          <FormField label="Assign Skill Rating (1-5):">
+            <TextInput
+              type="number"
+              min={1}
+              max={5}
+              value={rating}
+              onChange={e => setRating(Number(e.target.value))}
+            />
+          </FormField>
+          <div style={{ marginTop: '1rem' }}>
+            <SecondaryButton onClick={handleBack} style={{ marginRight: 8 }}>
+              Back
+            </SecondaryButton>
+            <PrimaryButton onClick={handleSubmit}>Submit</PrimaryButton>
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-/* -------------- Header & Navigation -------------- */
+/* ------------------ Header Component (Simplified Canvas) ------------------ */
+
 function Header() {
   return (
     <header className="canvas-header">
-      <h1>Iron Triangle BI</h1>
-      <input
-        type="text"
-        className="canvas-search-bar"
-        placeholder="Search skills, people, hospitals..."
-      />
+      <Text as="h1">Iron Triangle BI</Text>
+      <div style={{ width: 300 }}>
+        <TextInput placeholder="Search skills, people, hospitals..." />
+      </div>
       <div className="user-menu">
-        <img
-          src="https://via.placeholder.com/40"
-          alt="User"
-          className="canvas-profile-icon"
-        />
+        <Avatar size="s" altText="User" src="https://via.placeholder.com/40" />
+        {/* For presence, you could use a StatusIndicator (Labs) or a small dot icon */}
         <span className="presence-indicator online"></span>
       </div>
     </header>
   );
 }
+
+/* ------------------ Navigation (Canvas Buttons) ------------------ */
 
 function Navigation({ currentPage, onNavigate }) {
   const pages = [
@@ -562,25 +596,27 @@ function Navigation({ currentPage, onNavigate }) {
   return (
     <nav className="canvas-navbar">
       {pages.map(page => (
-        <button
+        <SecondaryButton
           key={page.key}
-          className={`canvas-button ${
-            currentPage === page.key ? 'active' : ''
-          }`}
           onClick={() => onNavigate(page.key)}
+          style={{
+            marginRight: '8px',
+            ...(currentPage === page.key ? { backgroundColor: '#EDFAFF' } : {})
+          }}
         >
           {page.label}
-        </button>
+        </SecondaryButton>
       ))}
     </nav>
   );
 }
 
-/* -------------- HomePage & Sub-Components -------------- */
+/* ------------------ HomePage ------------------ */
+
 function HomePage({ onNavigate }) {
   return (
     <div className="main-content">
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: '1' }}>
         <SearchBar onSearch={query => console.log('Search query:', query)} />
         <IndicatorsPanel />
         <ActivityFeed onNavigate={onNavigate} />
@@ -589,293 +625,133 @@ function HomePage({ onNavigate }) {
   );
 }
 
+/* ------------------ IndicatorsPanel Component ------------------ */
+
 function IndicatorsPanel() {
   const { activityFeed, skills } = useAppContext();
-
   const totalActivities = activityFeed.length;
   const totalMerges = activityFeed.filter(
-    item => item.dataField?.toLowerCase() === 'merge'
+    item => item.dataField && item.dataField.toLowerCase() === 'merge'
   ).length;
   const searchItems = activityFeed.filter(
-    item => item.entityType?.toUpperCase() === 'SEARCH'
-  );
-  const topSearches = [...new Set(searchItems.map(item => item.comment))];
-
-  const skillCoverageGaps = skills
-    .filter(skill => skill.popularityScore > 70)
-    .filter(skill => (skill.humans && skill.humans.length) < 3)
-    .map(skill => skill.name);
-
+    item => item.entityType && item.entityType.toUpperCase() === 'SEARCH'
+  ).length;
   return (
     <div className="indicators-panel">
-      <h2>Dashboard Insights</h2>
-      <ul>
-        <li>
-          <strong>Total Activities:</strong> {totalActivities}
-        </li>
-        <li>
-          <strong>Total Merges:</strong> {totalMerges}
-        </li>
-        {topSearches.length > 0 && (
-          <li>
-            <strong>Top Searches:</strong> {topSearches.join(', ')}
-          </li>
-        )}
-        {skillCoverageGaps.length > 0 && (
-          <li>
-            <strong>Coverage Gaps:</strong> {skillCoverageGaps.join(', ')}
-          </li>
-        )}
-      </ul>
+      <Text as="p">Total Activity: {totalActivities}</Text>
+      <Text as="p">Merges: {totalMerges}</Text>
+      <Text as="p">Searches: {searchItems}</Text>
+      <Text as="p">Total Skills: {skills.length}</Text>
     </div>
   );
 }
+
+/* ------------------ ActivityFeed Component (for HomePage) ------------------ */
 
 function ActivityFeed({ onNavigate }) {
   const { activityFeed } = useAppContext();
-
-  const memoizedFeed = useMemo(
-    () => activityFeed.map(item => <FeedItem key={item.id} item={item} onNavigate={onNavigate} />),
-    [activityFeed, onNavigate]
-  );
-
   return (
     <div className="activity-feed">
-      <h2>Activity Feed</h2>
-      {memoizedFeed}
-      {activityFeed.length === 0 && <p>No recent activity.</p>}
+      <Text as="h3">Global Activity Feed</Text>
+      {activityFeed.map(item => (
+        <div
+          key={item.id}
+          className="activity-item"
+          onClick={() =>
+            onNavigate('entity', {
+              type: item.entityType ? item.entityType.toLowerCase() : '',
+              id: item.entityId,
+              name: item.entityName
+            })
+          }
+        >
+          <Text as="p">
+            [{new Date(item.timestamp * 1000).toLocaleTimeString()}] {item.comment}
+          </Text>
+        </div>
+      ))}
     </div>
   );
 }
 
-function FeedItem({ item, onNavigate }) {
-  const date = new Date(item.timestamp * 1000);
-  return (
-    <div className="feed-item">
-      <div className="feed-item-header">
-        <strong>
-          <a
-            href="#"
-            onClick={e => {
-              e.preventDefault();
-              onNavigate('entity', {
-                type: 'human',
-                id: item.actorId,
-                name: item.actorName
-              });
-            }}
-          >
-            {item.actorName}
-          </a>
-        </strong>{' '}
-        updated{' '}
-        {item.entityName && (
-          <a
-            href="#"
-            onClick={e => {
-              e.preventDefault();
-              onNavigate('entity', {
-                type: item.entityType?.toLowerCase(),
-                id: item.entityId,
-                name: item.entityName
-              });
-            }}
-          >
-            {item.entityName}
-          </a>
-        )}{' '}
-        ({item.dataField})
-        <span className="timestamp">{date.toLocaleString()}</span>
-      </div>
-      <div className="feed-item-comment">{item.comment}</div>
-    </div>
-  );
-}
+/* ------------------ EntityPage Component ------------------ */
+// (See earlier definition; unchanged)
 
-/* -------------- Humans/Skills/Customers Pages -------------- */
-function HumansPage({ onNavigate }) {
-  const { humans } = useAppContext();
-  const memoizedRows = useMemo(() => {
-    return humans.map(user => (
-      <tr key={user.id}>
-        <td>
-          <a
-            href="#"
-            onClick={e => {
-              e.preventDefault();
-              onNavigate('entity', {
-                type: 'human',
-                id: user.id,
-                name: user.name
-              });
-            }}
-          >
-            {user.name}
-          </a>
-        </td>
-        {/* Using user.headline as "Role" fallback */}
-        <td>{user.headline ?? 'N/A'}</td>
-        <td>{user.presenceStatus}</td>
-      </tr>
-    ));
-  }, [humans, onNavigate]);
+/* ------------------ Main App Component ------------------ */
 
-  return (
-    <div className="page">
-      <h2>Humans</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Role</th>
-            <th>Presence</th>
-          </tr>
-        </thead>
-        <tbody>{memoizedRows}</tbody>
-      </table>
-    </div>
-  );
-}
-
-function SkillsPage({ onNavigate }) {
-  const { skills } = useAppContext();
-
-  const handleMergeSkills = (skillIdA, skillIdB) => {
-    console.log(`Merging skill ${skillIdA} with ${skillIdB}`);
-    // Implement actual merge logic if desired
-  };
-
-  const memoizedRows = useMemo(() => {
-    return skills.map(skill => (
-      <tr key={skill.id}>
-        <td>
-          <a
-            href="#"
-            onClick={e => {
-              e.preventDefault();
-              onNavigate('entity', {
-                type: 'skill',
-                id: skill.id,
-                name: skill.name
-              });
-            }}
-          >
-            {skill.name}
-          </a>
-        </td>
-        <td>{skill.description}</td>
-        <td>{skill.category}</td>
-        <td>
-          {skill.parentSkillId && <span>Parent: {skill.parentSkillId} </span>}
-          {skill.siblingSkills && skill.siblingSkills.join(', ')}
-          <SkillGraph skill={skill} />
-        </td>
-        <td>{skill.popularityScore}</td>
-        <td>
-          {skill.siblingSkills && skill.siblingSkills.length > 0 && (
-            <button
-              onClick={() => handleMergeSkills(skill.id, skill.siblingSkills[0])}
-            >
-              Merge with {skill.siblingSkills[0]}
-            </button>
-          )}
-        </td>
-      </tr>
-    ));
-  }, [skills, onNavigate]);
-
-  return (
-    <div className="page">
-      <h2>Skills</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Category</th>
-            <th>Adjacency</th>
-            <th>Popularity</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>{memoizedRows}</tbody>
-      </table>
-    </div>
-  );
-}
-
-function CustomersPage({ onNavigate }) {
-  const { customers } = useAppContext();
-  const memoizedRows = useMemo(() => {
-    return customers.map(cust => (
-      <tr key={cust.id}>
-        <td>
-          <a
-            href="#"
-            onClick={e => {
-              e.preventDefault();
-              onNavigate('entity', {
-                type: 'customer',
-                id: cust.id,
-                name: cust.name
-              });
-            }}
-          >
-            {cust.name}
-          </a>
-        </td>
-        <td>{cust.facilityType}</td>
-        <td>{cust.bedCount}</td>
-        <td>{cust.phoneNumber || 'N/A'}</td>
-      </tr>
-    ));
-  }, [customers, onNavigate]);
-
-  return (
-    <div className="page">
-      <h2>Customers</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Facility Type</th>
-            <th>Bed Count</th>
-            <th>Contact</th>
-          </tr>
-        </thead>
-        <tbody>{memoizedRows}</tbody>
-      </table>
-    </div>
-  );
-}
-
-/* -------------- Main Application -------------- */
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
-  const [activeEntity, setActiveEntity] = useState(null);
+  const [currentEntity, setCurrentEntity] = useState(null);
 
-  const handleNavigation = (page, entity = null) => {
-    setCurrentPage(page);
-    setActiveEntity(entity);
+  const handleNavigate = (pageOrType, payload) => {
+    if (pageOrType === 'entity') {
+      setCurrentEntity(payload);
+      setCurrentPage('entity');
+    } else {
+      setCurrentPage(pageOrType);
+      setCurrentEntity(null);
+    }
   };
+
+  let ContentComponent;
+  if (currentPage === 'home') {
+    ContentComponent = HomePage;
+  } else if (currentPage === 'humans') {
+    ContentComponent = () => (
+      <div>
+        <Text as="h2">Humans List</Text>
+        <div className="list-grid">
+          {useAppContext().humans.map(user => (
+            <HumanCard key={user.id} humanId={user.id} onNavigate={handleNavigate} />
+          ))}
+        </div>
+      </div>
+    );
+  } else if (currentPage === 'skills') {
+    ContentComponent = () => (
+      <div>
+        <Text as="h2">Skills List</Text>
+        <div className="list-grid">
+          {useAppContext().skills.map(skill => (
+            <SkillCard key={skill.id} skillId={skill.id} onNavigate={handleNavigate} />
+          ))}
+        </div>
+      </div>
+    );
+  } else if (currentPage === 'customers') {
+    ContentComponent = () => (
+      <div>
+        <Text as="h2">Customers List</Text>
+        <div className="list-grid">
+          {useAppContext().customers.map(customer => (
+            <CustomerCard key={customer.id} customerId={customer.id} onNavigate={handleNavigate} />
+          ))}
+        </div>
+      </div>
+    );
+  } else if (currentPage === 'interview') {
+    ContentComponent = InterviewPage;
+  } else if (currentPage === 'entity') {
+    ContentComponent = () => (
+      <div>
+        <SecondaryButton onClick={() => handleNavigate('home')}>
+          Back to Home
+        </SecondaryButton>
+        <EntityPage entity={currentEntity} onNavigate={handleNavigate} />
+      </div>
+    );
+  } else {
+    ContentComponent = () => <Text as="p">Page not found.</Text>;
+  }
 
   return (
     <AppProvider>
-      <div className="app">
+      <div className="app-container">
         <Header />
-        <Navigation currentPage={currentPage} onNavigate={handleNavigation} />
-        {currentPage === 'home' && <HomePage onNavigate={handleNavigation} />}
-        {currentPage === 'humans' && <HumansPage onNavigate={handleNavigation} />}
-        {currentPage === 'skills' && <SkillsPage onNavigate={handleNavigation} />}
-        {currentPage === 'customers' && (
-          <CustomersPage onNavigate={handleNavigation} />
-        )}
-        {currentPage === 'entity' && activeEntity && (
-          <EntityPage entity={activeEntity} onNavigate={handleNavigation} />
-        )}
-        {currentPage === 'interview' && (
-          <InterviewPage onNavigate={handleNavigation} />
-        )}
+        <Navigation currentPage={currentPage} onNavigate={handleNavigate} />
+        <main className="app-main">
+          <ContentComponent onNavigate={handleNavigate} />
+        </main>
       </div>
     </AppProvider>
   );

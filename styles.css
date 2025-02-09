@@ -1,4 +1,11 @@
+
+
+
 /* src/styles.css */
+
+@import '@workday/canvas-kit-css-core/dist/index.css';
+
+
 
 /* ------------------ Workday Canvas Design Tokens ------------------ */
 :root {
