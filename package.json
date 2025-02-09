@@ -1,22 +1,19 @@
 {
   "name": "iron-t2",
   "version": "0.0.1",
-  "description": "React + CanvasKit + Vite",
-  "type": "module",
+  "private": true,
   "scripts": {
-    "start": "vite",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "latest",
-    "react-dom": "latest",
-    "@workday/canvas-kit-react": "latest",
-    "sass": "latest"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@workday/canvas-kit-react-core": "^0.0.0" 
   },
   "devDependencies": {
-    "vite": "latest",
-    "@vitejs/plugin-react": "latest"
+    "vite": "^4.0.0",
+    "@vitejs/plugin-react": "^4.0.0"
   }
 }
