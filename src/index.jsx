@@ -2,12 +2,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './styles.css'; // Global CSS
-// Option A: Precompiled CSS
-import "@workday/canvas-kit-react/core/index.scss";
 
-// If you installed Workday CanvasKit via npm and want the CSS globally:
-// import '@workday/canvas-kit-css/dist/canvas-kit.css';
+// Import CanvasKit's SCSS for global styling:
+import '@workday/canvas-kit-react/core/index.scss';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
