@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "iron-t2",
   "version": "0.0.1",
   "private": true,
@@ -7,14 +8,31 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+=======
+  "name": "my-canvas-react-app",
+  "version": "1.0.0",
+  "description": "React + CanvasKit with Vite",
+>>>>>>> parent of ac93d56 (Update package.json)
   "dependencies": {
     "@workday/canvas-kit-css-core": "^9.1.26",
     "@workday/canvas-kit-react": "^12.3.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
+  // Add Vite + plugin-react as devDependencies
   "devDependencies": {
+<<<<<<< HEAD
     "@vitejs/plugin-react": "^4.3.4",
     "vite": "^6.1.0"
+=======
+    "vite": "latest",
+    "@vitejs/plugin-react": "latest"
+  },
+  "scripts": {
+    // Vite commands
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+>>>>>>> parent of ac93d56 (Update package.json)
   }
 }
