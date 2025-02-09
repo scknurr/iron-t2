@@ -10,7 +10,8 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@workday/canvas-kit-react-core": "^0.0.0" 
+    "@workday/canvas-kit-react": "^8.0.0",
+    "@workday/canvas-kit-css-core": "^8.9.0"
   },
   "devDependencies": {
     "vite": "^4.0.0",
