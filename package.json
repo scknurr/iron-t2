@@ -8,13 +8,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@workday/canvas-kit-react": "^8.0.0",
-    "@workday/canvas-kit-css-core": "^8.9.0"
+    "@workday/canvas-kit-css-core": "^9.1.26",
+    "@workday/canvas-kit-react": "^12.3.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "vite": "^4.0.0",
-    "@vitejs/plugin-react": "^4.0.0"
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.1.0"
   }
 }
