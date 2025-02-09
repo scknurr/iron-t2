@@ -1,15 +1,22 @@
 {
   "name": "my-canvas-react-app",
   "version": "1.0.0",
-  "description": "React + CanvasKit on StackBlitz",
+  "description": "React + CanvasKit with Vite",
   "dependencies": {
     "react": "latest",
     "react-dom": "latest",
     "@workday/canvas-kit-react": "latest",
-    "sass": "latest"                     
+    "sass": "latest"
+  },
+  // Add Vite + plugin-react as devDependencies
+  "devDependencies": {
+    "vite": "latest",
+    "@vitejs/plugin-react": "latest"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build"
+    // Vite commands
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   }
 }
